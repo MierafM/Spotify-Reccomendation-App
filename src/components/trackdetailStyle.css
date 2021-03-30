@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Poppins&family=Vollkorn:wght@500&display=swap');
+
+.tdPageMain{
+  background-color: #d9d8f3;
+
+}
+.trackDetailBody{
+  display: flex;
+  flex-flow: row wrap;
+}
+.songInformation{
+
+  margin: 2vmin;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+.albumCover{
+  height: 18vmax;
+  width: 18vmax;
+}
+.songText{
+  display: flex;
+  flex-flow: column nowrap;
+  margin: 0px 2vmin;
+}
+.aboutSong{
+  display: flex;
+  flex-flow: column wrap;
+}
+.songTitle{
+  font-size: 2vmax;
+  padding: 0px;
+  margin: 0px;
+}
+.aboutSong h4{
+  font-size: 1.5vmax;
+  margin: 0px;
+  font-family: Poppins;
+}
+.songFeatures{
+  display: flex;
+  flex-flow: column nowrap;
+}
+.songFeatures h3{
+  margin: 1vmin 0vmin 0vmin 0vmin;
+  font-size: 1.7vmax;
+  align-self: center;
+}
+.songStats{
+  display: flex;
+
+}
+.featuresList{
+  display: flex;
+  flex-flow: row wrap;
+  list-style-type: none;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0px;
+  margin-bottom: 0px;
+
+
+}
+.featuresList li{
+  padding: 0.5vmax;
+  font-size: 1.5vmax;
+
+  font-family: Poppins;
+  width: 15vmax;
+
+}
+.trackDetailBody{
+  display: flex;
+}
+
+.songRecomendation{
+  display: flex;
+  flex-flow: row wrap;
+  align-self: center;
+}
+.songRecomendation h4{
+  margin: 0vmin 2vmin;
+  font-size: 1.7vmax;
+}
+.recomendedList{
+  display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+    align-items: flex-start;
+}

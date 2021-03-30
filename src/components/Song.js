@@ -1,32 +1,58 @@
 import React from 'react';
 import  { Component } from 'react';
-
+import './songStyle.css';
 
 class Song extends Component{
+
+
+  state = {
+    play: false,
+    preview: new Audio(this.props.song.preview)
+  }
+
+  togglePlay = () => {
+
+    console.log('in da club');
+    console.log(this.state.preview);
+
+    this.setState({ play: !this.state.play },
+      () => {
+      this.state.play ? this.state.preview.play() : this.state.preview.pause();
+      });
+  }
+
+
   render(){
     return(
-      <div>
+      <div className="Songs">
       {this.props.song ?
 
-      <div style={{float:'left', width:'33%'}}>
+        <div className='trackTile'>
 
+          <div className='imgAndPreview'>
 
-        <img style={{margin: 'auto', width:'35%'}}src={this.props.song.image.url}/><br/>
+            <img className='songImage' src={this.props.song.image.url} onClick={this.togglePlay}/>
+            <div>
+            </div>
+            {/*option to include song preview but not all the songs have a preview clip
+            <audio className='audioToggle' controls> <source src={this.props.song.preview}/> </audio>
+              {this.props.song.preview ?
+              <div className='previewSection'style={{align:'center'}}>
+                 <audio className='audioToggle' controls> <source src={this.props.song.preview}/> </audio>
 
-        {this.props.song.preview ?
-          <div style={{align:'center'}}>
-          <audio controls style={{height:'30px', width:'70%'}}> <source src={this.props.song.preview}/> </audio>
-          <br/>
+              </div>
+            : <span className='previewAlt' >no preview</span>
+            }*/}
           </div>
-          :<div> <p style={{padding:'2px', border: '2px', margin:'3.2px'}}>no preview</p></div>
-        }
 
-        <a href={this.props.song.id}> {this.props.song.title}</a>
-        <h5>{this.props.song.artist}</h5>
+          <div className='songInfo'>
+            <a href={this.props.song.id}> {this.props.song.title}</a>
+            <span>{this.props.song.artist}</span>
+          </div>
 
-      </div>
-      :<p>loading reccomendations...</p>
-    }
+        </div>
+      :<p className='loadingMessage'>loading recomendations...</p>
+      }
     </div>
   )}}
 

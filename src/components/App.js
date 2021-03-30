@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import queryString from 'query-string';
-
 import Trackdetail from './Trackdetail';
-
 import Song from './Song';
+import Header from './Header';
+import './style.css';
 import {
   BrowserRouter as Router,
   Switch,
@@ -11,34 +11,13 @@ import {
   Link} from "react-router-dom";
 import { SpotifyApiContext } from 'react-spotify-api';
 
-
-class App extends Component {
+class App extends Component{
   constructor() {
     super();
     this.state = {}
   }
   callbackFunction = (token) =>{
     this.setState({accessToken: token})
-  }
-  render() {
-    return (
-
-        <div className="App">
-          <header style={{backgroundColor:'#343434', color:'white'}}className="App-header">
-            <h1 style={{backgroundColor:'#343434', marginTop:'0px'}}>Spotify Reccomendations</h1>
-            <p style={{paddingBottom:'2%'}}>find song reccomendations based on a song's metadata</p>
-          </header>
-          <Main parentCallback={this.callbackFunction}/>
-        </div>
-
-    );
-  }
-}
-
-class Main extends Component{
-  constructor() {
-    super();
-    this.state = {}
   }
   componentDidMount() {
     let parsed = queryString.parse(window.location.search);
@@ -58,8 +37,10 @@ class Main extends Component{
       headers: {'Authorization': 'Bearer ' + accessToken}
     }).then(response => response.json()).then(data =>
       {data &&
+        console.log(data);
         this.setState({
-          recent: data.items.map(item => ({
+          recent: data.items.filter(item => item.track.preview_url)
+          .map(item => ({
             title: item.track.name,
             artist: item.track.artists[0].name,
             image:item.track.album.images[0],
@@ -68,27 +49,34 @@ class Main extends Component{
           }))
         })
       })
-        this.props.parentCallback(this.access)
+        //this.props.parentCallback(this.access)
   }
 
   render(){
 
     return(
 
-        <div className="App">
+
+        <div className="appDiv">
+          <Header/>
+          {/*calls the main component here and executes a function that saves the accesstoken */}
+          {/*<Main parentCallback={this.callbackFunction}/>*/}
+
           {this.state.user ?
-            <div >
-              <h2 style={{width: '50%'}}>{this.state.user && this.state.user.name}'s Recently Played </h2>
+            <div className="nameDisplay">
+              <h2>{this.state.user && this.state.user.name}'s Recently Played </h2>
 
             </div>
-            :<button onClick={() => window.location='http://localhost:8888/login'}>sign in with spotify</button>
+            :<button className="signInButton" onClick={() => window.location='http://localhost:8888/login'}>sign in with spotify</button>
           }
-
           {this.state.recent ?
-            <div className='Recent-songs'>
-              {this.state.recent.map(song =>  <Song song={song}/>)}
+            <div className='RecentSongs'>
+              {this.state.recent.map(song =>
+
+                <Song song={song}/>
+              )}
             </div>
-            :<p>searching for recently played</p>
+            :<p className='loadingMessage'>searching for recently played...</p>
           }
         </div>
 

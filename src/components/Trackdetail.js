@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import {App, Main} from './App';
+import {App} from './App';
 import queryString from 'query-string';
-
+import './trackdetailStyle.css';
 import  {useState, useContext} from "react";
 import Song from './Song';
+import Header from './Header';
 
 import {
   BrowserRouter as Router,
@@ -14,7 +15,7 @@ import {
 } from "react-router-dom";
 
 class Detail extends Component {
-  
+
   constructor() {
     super();
     this.state = {}
@@ -26,7 +27,7 @@ class Detail extends Component {
       let parsed = queryString.parseUrl(window.location.pathname);
       let id= parsed.url.toString().slice(1)
       let token = sessionStorage.getItem('myTokenName')
-      console.log(token)
+      console.log('this is the token: ' + token)
     fetch('https://api.spotify.com/v1/tracks/'+id, {
       headers: {'Authorization': 'Bearer ' + token}
     }).then(response => response.json())
@@ -42,10 +43,10 @@ class Detail extends Component {
           }
         })
       })
+      console.log('2this is the token: ' + token)
     fetch('https://api.spotify.com/v1/audio-features/'+id, {
       headers: {'Authorization': 'Bearer ' + token}
-    })
-      .then(response => response.json())
+    }).then(response => response.json())
       .then(data => {data &&
         this.setState({
           features:{
@@ -59,71 +60,110 @@ class Detail extends Component {
             key:data.key
           }
         })
-        console.log(data)
-        return fetch('https://api.spotify.com/v1/recommendations?seed_tracks='+data.id
-        +'&target_energy='+data.energy+'&target_danceability='+data.danceability
-        +'&target_tempo='+data.tempo+'&target_key='+data.key+'&target_valence='+data.valence, {
+        {/*dont forget to restric for popularity and songs with previews*/}
+        return fetch('https://api.spotify.com/v1/recommendations?seed_tracks='
+        +data.id
+        +'&target_energy='+data.energy+'&min_energy='+(data.energy-10)+'&max_energy='+(data.energy+10)
+        +'&target_danceability='+data.danceability+'&min_danceability='+(data.danceability-10)+'&max_danceability='+(data.danceability+10)
+        +'&target_tempo='+data.tempo+'&min_tempo='+(data.tempo-10)+'&max_tempo='+(data.tempo+10)
+        +'&target_key='+data.key
+        +'&target_valence='+data.valence
+        +'&limit='+40, {
           headers: {'Authorization': 'Bearer ' + token}
         })})
       .then(response => response.json())
       .then(data =>
         {data &&
+          console.log(data)
           this.setState({
-            reccomendations: data.tracks.map(item => ({
+            recomendations: data.tracks.filter(item => item.preview_url).map(item => ({
               title: item.name,
               id: item.id,
               artist:item.artists[0].name,
               image:item.album.images[0],
               preview:item.preview_url
-            }))
-      })}
+              }))
+
+          })
+
+      }
+
     )
 
-    console.log(this.state)
+
 
 
   }
 
 
   render() {
-    console.log(this.state)
     return (
-    <div>
-    <div style={{top:'0', left:'0', width:'25%', height:'100%', position:'fixed'}}>
-      {this.state.song ?
-          <div >
-            <img src={this.state.song.image.url} style={{width:'85%', height:'85%'}}/>
-            <h3>{this.state.song.name}</h3>
-            <h4>By: {this.state.song.artist}</h4>
-            <p>Popularity:{this.state.song.popularity}</p>
-            <h4>Song features</h4>
-          </div>
-        : <p>loading song...</p>}
-      {this.state.features ?
-          <div>
-            <ul>
-              <li>acousticness: {this.state.features.acousticness}</li>
-              <li>danceability: {this.state.features.danceability}</li>
-              <li>energy: {this.state.features.energy}</li>
-              <li>liveness: {this.state.features.liveness}</li>
-              <li>loudness: {this.state.features.loudness}</li>
-              <li>valence: {this.state.features.valence}</li>
-              <li>tempo: {this.state.features.tempo}</li>
-              <li>key: {this.state.features.key}</li>
-            </ul>
-          </div>
-        :<p>loading song features...</p>}
+    <div className='tdPageMain'>
+      <Header/>
+
+      <div className='trackDetailBody'>
+        <div className='songInformation'>
+          {this.state.song ?
+
+                <img  className='albumCover' src={this.state.song.image.url}/>
+            : <p className='loadingMessage'>loading Album cover...</p>
+          }
+          {this.state.song ?
+              <div className="songText">
+
+                <div className="aboutSong">
+                  <h3 className='songTitle'>{this.state.song.name}</h3>
+                  <h4>By: {this.state.song.artist}</h4>
+                </div>
+
+                {this.state.features ?
+                    <div className="songFeatures">
+                      <h3>Song features</h3>
+                      <div className="songStats">
+                        <ul className="featuresList">
+                          <li>acousticness: {this.state.features.acousticness}</li>
+                          <li>danceability: {this.state.features.danceability}</li>
+                          <li>energy: {this.state.features.energy}</li>
+                          <li>liveness: {this.state.features.liveness}</li>
+
+                          <li>loudness: {this.state.features.loudness}</li>
+                          <li>valence: {this.state.features.valence}</li>
+                          <li>tempo: {this.state.features.tempo}</li>
+                          <li>key: {this.state.features.key}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  :<p className='loadingMessage'>loading song features...</p>
+                }
+
+              </div>
+            : <p className='loadingMessage'>loading song...</p>
+          }
+
+        </div>
+
+        <div className="songRecomendation">
+        {this.state.song ?
+          <h4 >Songs similar to {this.state.song.name}:</h4>
+          : <p className='loadingMessage'>loading Album cover...</p>
+        }
+
+        {this.state.recomendations ?
+              <div className='recomendedList' >
+
+              {this.state.recomendations.map(song =>
+                <div>
+                <Song song={song}/>
+                </div>
+              )}
+              </div>
+          :<p className='loadingMessage'>Loading recomendations...</p>
+        }
+        </div>
+      </div>
+
     </div>
-    <div>
-    {this.state.reccomendations ?
-          <div style={{float:'right', width:'75%'}}>
-          <h4 >Reccomendations for this song</h4>
-          {this.state.reccomendations.map(song =>  <Song song={song}/>)}
-          </div>
-      :<p>getting reccomendations...</p>
-    }
-    </div>
-    </div>
+
   );
 }
 }
